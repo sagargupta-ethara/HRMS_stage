@@ -42,7 +42,6 @@ On the Ethara **stage** instance every account below uses the password **`ethara
 | `vendor@ethara.ai` | vendor | Vendor portal |
 | `employee@ethara.ai` | employee | Standard employee |
 | `employee.demo@ethara.ai` | employee | Demo employee |
-| `employee.documents@ethara.ai` | employee | Employee-documents demo |
 | `arjun.demo@gmail.com` | candidate | Demo candidate (portal) |
 
 > These are throwaway test accounts. **Never** enable them or reuse `ethara123`
