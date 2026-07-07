@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.npm-cache/
+.pip-cache/
+
+# Build outputs
+dist/
+.next/
+.next*/
+out/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+ethara-hrms-api/app/services/service_account.json
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+alembic.db
+*.db
+*.db.bak-*
+celerybeat-schedule*
+uploads/
+.sisyphus/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+.deploy-logs/
+*.log
+*.pid
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Prisma
+prisma/*.db
+ethara-hrms-api/app/services/service_account.json
+ethara-hrms-api/app/services/service_account.json
+
+# Local stage-only tooling / artifacts (never committed, not for prod)
+mail-sink/
+venv/
+ethara-hrms-api/uploads

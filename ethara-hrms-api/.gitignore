@@ -1,0 +1,13 @@
+
+# Database backups (db_backup.sh)
+backups/
+*.dump
+*.dump.partial
+
+# Local runtime state and sensitive config
+.env
+.env.*
+!.env.example
+uploads/
+.deploy-logs/
+celerybeat-schedule*

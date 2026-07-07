@@ -1,0 +1,2 @@
+"""Ethara HRMS FastAPI backend."""
+

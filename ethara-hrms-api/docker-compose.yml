@@ -1,0 +1,102 @@
+version: '3.9'
+
+# ─── Development workflow ─────────────────────────────────────────────────────
+# For local development, only start postgres and redis:
+#   docker compose up -d postgres redis
+# Then run the API locally so code changes are picked up immediately:
+#   uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 3001
+#
+# To run everything in Docker (e.g. staging / CI), use:
+#   docker-compose --profile full up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  api:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ethara_api
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      # Override only what differs inside the container network
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in the environment}
+      REDIS_URL: redis://redis:6379/0
+      LOCAL_STORAGE_PATH: /app/uploads
+      # NOTE: do NOT override EMAIL_BACKEND here — let .env control it
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uploads:/app/uploads
+
+  worker:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ethara_worker
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in the environment}
+      REDIS_URL: redis://redis:6379/0
+      LOCAL_STORAGE_PATH: /app/uploads
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=info
+
+  beat:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ethara_beat
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in the environment}
+      REDIS_URL: redis://redis:6379/0
+      LOCAL_STORAGE_PATH: /app/uploads
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+    command: celery -A app.core.celery_app.celery_app beat --loglevel=info
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ethara_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ethara_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in the environment}
+      POSTGRES_DB: ethara_hrms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: ethara_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

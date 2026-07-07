@@ -1,0 +1,113 @@
+{
+  "summary": "Tested Process Flow PDF page and @ethara.ai signup restriction. Backend: 14/14 tests passed (100%). Frontend: All critical features working - PDF loads and renders, sidebar navigation works, bookmark/notes functional, signup restriction blocks non-ethara emails. One minor UI issue: error toast shows generic message instead of API response on registration rejection.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Register.js",
+        "issue": "When registration is rejected (non @ethara.ai email), toast shows 'Failed to connect to server' instead of the actual API error message 'Registration is restricted to Ethara AI employees only'",
+        "selector": "Register form submit handler",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "passed_tests": [
+    "Backend: Health check endpoint",
+    "Backend: Register with non @ethara.ai email rejected (400)",
+    "Backend: Register with @ethara.ai email accepted (200)",
+    "Backend: PDF endpoint without token returns 401",
+    "Backend: PDF endpoint with invalid token returns 401",
+    "Backend: PDF endpoint with valid token returns 200 with PDF content",
+    "Backend: PDF endpoint for nonexistent doc returns 404",
+    "Backend: PDF headers prevent caching",
+    "Backend: PDF has content-disposition header",
+    "Backend: Login with invalid credentials rejected (401)",
+    "Backend: Login with nonexistent user rejected (401)",
+    "Frontend: Sidebar Operations category expandable",
+    "Frontend: Process Flow link navigates to /process-flow",
+    "Frontend: Process Flow page title displays correctly",
+    "Frontend: PDF canvas renders successfully",
+    "Frontend: Page navigation controls (Previous/Next/Page input) present",
+    "Frontend: Bookmark button saves and shows 'Page 1' state",
+    "Frontend: Notes panel toggle works",
+    "Frontend: Add note functionality works",
+    "Frontend: Bookmark delete works",
+    "Frontend: Right-click (context menu) is prevented on PDF viewer",
+    "Frontend: User-select: none applied to PDF container",
+    "Frontend: Registration blocked for non @ethara.ai emails (stays on page)"
+  ],
+  
+  "test_report_links": [
+    "/app/backend/tests/test_process_flow_signup.py",
+    "/app/test_reports/pytest/pytest_process_flow.xml"
+  ],
+  
+  "action_items": [
+    "OPTIONAL: Fix Register.js error handling to show actual API error message instead of generic 'Failed to connect to server'"
+  ],
+  
+  "critical_code_review_comments": [
+    "ProcessFlowPage.js properly implements PDF viewing with bookmark and notes features",
+    "Context menu prevention and user-select: none correctly applied",
+    "Backend ALLOWED_EMAIL_DOMAINS check at line 207-217 working correctly",
+    "INTERNAL_DOCS dictionary correctly maps 'process-flow' to PDF URL"
+  ],
+  
+  "updated_files": [
+    "/app/backend/tests/test_process_flow_signup.py"
+  ],
+  
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "95%"
+  },
+  
+  "test_credentials": {
+    "email": "admin@ethara.ai",
+    "password": "test123",
+    "role": "viewer"
+  },
+  
+  "seed_data_creation": "Created test users with @ethara.ai email for testing",
+  
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  
+  "context_for_next_testing_agent": "Process Flow page and signup restriction fully tested. Test file at /app/backend/tests/test_process_flow_signup.py covers all API endpoints. Frontend data-testid attributes for Process Flow page: process-flow-page-title, process-flow-bookmark-button, process-flow-notes-toggle, process-flow-notes-panel, process-flow-new-note-input, process-flow-add-note-button, process-flow-prev-page, process-flow-next-page, process-flow-page-input, process-flow-link (in sidebar). Minor issue: Register.js shows generic error instead of API error message.",
+  
+  "features_verified": {
+    "process_flow_page": {
+      "pdf_loads": "✓ PDF renders via canvas using PDF.js",
+      "page_navigation": "✓ Previous/Next buttons and page input work",
+      "bookmark_save": "✓ Saves current page as bookmark",
+      "bookmark_goto": "✓ Button shows 'Page X' when bookmarked",
+      "bookmark_delete": "✓ X button removes bookmark",
+      "notes_panel": "✓ Toggle opens/closes notes panel",
+      "notes_add": "✓ Notes can be added with page prefix",
+      "right_click_disabled": "✓ Context menu prevented on PDF viewer"
+    },
+    "sidebar_navigation": {
+      "operations_category": "✓ Expandable via toggle",
+      "process_flow_link": "✓ Navigates to /process-flow route"
+    },
+    "signup_restriction": {
+      "backend_validation": "✓ Non @ethara.ai emails rejected with 400",
+      "ethara_emails_accepted": "✓ @ethara.ai emails can register",
+      "frontend_blocks": "✓ User stays on register page when rejected"
+    },
+    "pdf_proxy": {
+      "auth_required": "✓ Returns 401 without token",
+      "valid_token_works": "✓ Returns 200 with PDF content",
+      "cache_headers": "✓ Cache-Control: no-store applied",
+      "content_disposition": "✓ Filename set correctly"
+    }
+  }
+}

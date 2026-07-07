@@ -1,0 +1,185 @@
+# Ethara HRMS Platform
+
+A fully-featured Hiring & Onboarding Management System built with **Next.js 16** (frontend) and **NestJS 11** (backend).
+
+---
+
+## 🏗️ Architecture
+
+```
+ethara-hrms/        — Next.js 16 frontend (App Router)
+ethara-hrms-api/    — FastAPI backend REST API (Python 3.12)
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1. Start Infrastructure (Docker)
+```bash
+cd ethara-hrms-api
+docker-compose up -d
+```
+Starts PostgreSQL (port 5432) and Redis (port 6379).
+
+### 2. Setup Database
+```bash
+cd ethara-hrms-api
+uv run alembic upgrade head   # Run migrations
+uv run python -m app.db.seed  # Seed demo data
+```
+
+### 3. Start Backend API
+```bash
+cd ethara-hrms-api
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 3001
+# API running at http://localhost:3001
+# Swagger docs at http://localhost:3001/api/docs
+```
+
+### 4. Start Frontend
+```bash
+cd ethara-hrms
+npm run dev
+# App running at http://localhost:3000
+```
+
+---
+
+## 👤 Demo Login Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@ethara.ai | admin123 |
+| HR | hr@ethara.ai | hr123 |
+| Vendor | vendor@ethara.ai | vendor123 |
+| Evaluator | evaluator@ethara.ai | evaluator123 |
+| IT Team | it@ethara.ai | it123 |
+| Manager | manager@ethara.ai | manager123 |
+| Office Admin | officeadmin@ethara.ai | officeadmin123 |
+| Candidate | arjun.demo@gmail.com | demo123 |
+
+---
+
+## 📱 Frontend Routes (36 total)
+
+### Dashboard
+- `/` — Login page
+- `/dashboard/admin` — Admin overview
+- `/dashboard/hr` — HR dashboard
+- `/dashboard/vendor` — Vendor portal
+- `/dashboard/evaluator` — Evaluator dashboard
+- `/dashboard/it` — IT team dashboard
+- `/dashboard/referrer` — Employee referrer
+
+### Candidates
+- `/dashboard/candidates` — Candidate list with filters
+- `/dashboard/candidates/[id]` — Candidate profile (7 tabs)
+- `/dashboard/candidates/new` — Add new candidate
+
+### Core Modules
+- `/dashboard/screening` — AI resume screening
+- `/dashboard/evaluations` — Scoring interface
+- `/dashboard/evaluations/completed` — Completed evaluations
+- `/dashboard/selection-forms` — Form tracking
+- `/dashboard/documents` — Document management
+- `/dashboard/contracts` — Contract lifecycle
+- `/dashboard/compliance` — Statutory forms
+- `/dashboard/escalations` — SLA breach tracking
+- `/dashboard/it-requests` — Email creation queue
+- `/dashboard/it-requests/completed` — Completed emails
+- `/dashboard/notifications` — Notification center
+- `/dashboard/audit-logs` — Activity trail
+- `/dashboard/reports` — Analytics & charts
+- `/dashboard/referrals` — Referral tracking
+
+### Configuration
+- `/dashboard/config/vendors` — Vendor CRUD
+- `/dashboard/config/colleges` — College CRUD
+- `/dashboard/config/positions` — Position management
+- `/dashboard/config/users` — User & role management
+- `/dashboard/config/settings` — System settings
+
+### Candidate Portal
+- `/portal/dashboard` — Application journey tracker
+- `/portal/application` — Application form
+- `/portal/documents` — Document upload
+- `/portal/contract` — E-sign contract
+- `/portal/compliance` — Statutory forms
+- `/portal/notifications` — Notifications
+
+---
+
+## 🔌 Backend API Endpoints
+
+| Module | Endpoints |
+|--------|-----------|
+| Auth | POST /auth/login, POST /auth/logout, POST /auth/refresh, GET /auth/me |
+| Candidates | GET/POST /candidates, GET/PATCH /candidates/:id, POST /candidates/:id/advance-stage |
+| Reports | GET /reports/summary, /reports/funnel, /reports/escalations, /reports/positions |
+
+---
+
+## ⚙️ Environment Variables
+
+### Frontend (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
+```
+
+### Backend (.env)
+```env
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@localhost:5432/ethara_hrms
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_EXPIRES_IN=60m
+JWT_REFRESH_EXPIRES_IN=7d
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+OPENAI_API_KEY=sk-...
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=ap-south-1
+AWS_S3_BUCKET=ethara-hrms-docs
+```
+
+---
+
+## 🤖 Background Jobs (Celery + Redis)
+
+| Job | Schedule | Description |
+|-----|----------|-------------|
+| SLA Checker | Every 30 min | Scans candidates for stage breaches and creates escalations |
+| Screening | On-demand | Calls LLM (gpt-4.1-mini / Gemini) to analyze resume vs job description |
+| Notifications | Event-driven | Sends in-app notifications for SLA breaches and stage changes |
+
+---
+
+## 🗄️ Database Models (SQLAlchemy 2.0 + Alembic)
+
+User, Vendor, College, Position, Candidate, StageLog, Evaluation, SelectionForm, Document, Contract, ComplianceForm, Escalation, Notification, ITRequest, AuditLog
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS + shadcn/ui (Base UI)
+- Recharts (analytics)
+- Sonner (toasts)
+
+### Backend
+- FastAPI (Python 3.12)
+- PostgreSQL + SQLAlchemy 2.0 + Alembic (migrations)
+- Redis + Celery (job queues)
+- PyJWT (auth — no Passport)
+- Swagger/OpenAPI (auto-generated by FastAPI)
+
+### Infrastructure
+- Docker Compose (local dev)
+- AWS S3 (document storage)
+- OpenAI gpt-4.1-mini / Google Gemini (resume screening, OCR fallback)
+- Documenso (e-signatures)

@@ -1,0 +1,129 @@
+{
+  "project_name": "Ethara Wiki",
+  "design_philosophy": {
+    "theme": "Dark Futuristic Enterprise",
+    "core_concept": "Knowledge as a Neural Network",
+    "emotion": "Precision, Clarity, Depth, Speed",
+    "visual_style": "Deep Navy/Black backgrounds with glowing Mint/Cyan accents. High contrast text. Glassmorphism for overlays. Subtle animated borders.",
+    "layout_mode": "Fluid Dashboard with Collapsible Navigation"
+  },
+  "typography": {
+    "font_family_heading": "Manrope, sans-serif",
+    "font_family_body": "Inter, sans-serif",
+    "font_family_code": "JetBrains Mono, monospace",
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-medium",
+      "body": "text-base leading-relaxed text-slate-300",
+      "small": "text-sm text-slate-400"
+    }
+  },
+  "colors": {
+    "background": {
+      "default": "#020617",
+      "card": "#0f172a",
+      "sidebar": "#020617"
+    },
+    "foreground": {
+      "default": "#f8fafc",
+      "muted": "#94a3b8"
+    },
+    "primary": {
+      "DEFAULT": "#2dd4bf",
+      "foreground": "#020617",
+      "hover": "#14b8a6"
+    },
+    "secondary": {
+      "DEFAULT": "#1e293b",
+      "foreground": "#f8fafc"
+    },
+    "accent": {
+      "DEFAULT": "#0f766e",
+      "foreground": "#f0fdfa",
+      "glow": "0 0 20px rgba(45, 212, 191, 0.5)"
+    },
+    "border": "#1e293b",
+    "gradients": {
+      "hero": "radial-gradient(circle at top center, #115e59 0%, #020617 70%)",
+      "card_hover": "linear-gradient(180deg, rgba(45, 212, 191, 0.1) 0%, rgba(2, 6, 23, 0) 100%)"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-slate-950/70 border border-slate-800/50",
+    "tracing_beam": "A glowing cyan border that animates around the active card or section.",
+    "noise_texture": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+    "shadows": {
+      "glow": "0 0 40px -10px rgba(45, 212, 191, 0.3)",
+      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(45,212,191,0.3)] transition-all duration-300 rounded-lg font-medium px-6 py-2",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-slate-700/50 rounded-lg font-medium px-6 py-2",
+      "ghost": "hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg px-4 py-2"
+    },
+    "cards": {
+      "default": "bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-primary/50 transition-colors duration-300 relative overflow-hidden group"
+    },
+    "inputs": {
+      "default": "bg-slate-950 border-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/50 rounded-lg text-slate-100 placeholder:text-slate-600"
+    },
+    "badges": {
+      "role": {
+        "admin": "bg-red-500/10 text-red-400 border-red-500/20",
+        "editor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+        "viewer": "bg-slate-500/10 text-slate-400 border-slate-500/20"
+      }
+    }
+  },
+  "layout_strategies": {
+    "dashboard": "Grid layout with fixed sidebar (collapsible on mobile) and scrollable main content area. Max-width constraint for readability on wiki pages.",
+    "wiki_page": "Center-aligned content column (max-w-3xl) with floating Table of Contents on the right (desktop only).",
+    "login": "Split screen: Left side interactive abstract 3D/Gradient, Right side form. Or Centered Glass Card on animated background."
+  },
+  "motion": {
+    "page_transition": "initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}",
+    "stagger_children": "staggerChildren: 0.1",
+    "hover_lift": "whileHover={{ y: -4 }} transition={{ type: 'spring', stiffness: 300 }}"
+  },
+  "image_urls": {
+    "login_bg": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80",
+    "default_avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100",
+    "wiki_placeholder": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80"
+  },
+  "wiki_structure": {
+    "categories": [
+      "Foundation",
+      "Strategy & Leadership",
+      "Operations",
+      "HR",
+      "Finance",
+      "Compliance & Legal",
+      "Knowledge Systems",
+      "Learning & Development"
+    ]
+  },
+  "roles": ["Admin", "Editor", "Viewer"],
+  "universal_guidelines": [
+    "Use 'framer-motion' for all entrances and interactions.",
+    "Implement 'Role-Based Access Control' (RBAC) in the UI - hide 'Edit' buttons for Viewers.",
+    "Use 'tiptap' or 'react-quill' for the Rich Text Editor. Customize the toolbar to match the dark theme.",
+    "AI Chat must feel like a helper, not an intruder. Use a floating action button or a dedicated sidebar tab.",
+    "Ensure high contrast for text (APCA standard).",
+    "Use 'sonner' for all notifications.",
+    "Do NOT use gradients for text to ensure readability.",
+    "Navigation links must have active states with a glowing left border or background tint."
+  ],
+  "instructions_to_main_agent": [
+    "1. Setup 'framer-motion' and 'tiptap' (or similar) immediately.",
+    "2. Create a 'Layout' component that handles the Sidebar and Topbar.",
+    "3. Implement the Auth Context to manage JWT and User Roles.",
+    "4. Build the Wiki Tree navigation component with recursive rendering for subcategories.",
+    "5. Create the 'RichTextEditor' component with a custom toolbar.",
+    "6. Keep helper UI contextual and non-intrusive.",
+    "7. Ensure the Dashboard shows 'Recent Updates' and 'Quick Links'.",
+    "8. Use the defined color palette variables in 'tailwind.config.js' (extend theme)."
+  ]
+}
