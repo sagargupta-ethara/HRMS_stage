@@ -1,0 +1,174 @@
+// Documenso-style template builder data model.
+//
+// Field positions are stored as PERCENTAGES of the page (page, xPct, yPct,
+// widthPct, heightPct) so a template renders identically at any zoom / screen
+// size, and maps cleanly onto Documenso's own percentage-based field geometry.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Template = a reusable PDF + its recipients + field placements.
+// ---------------------------------------------------------------------------
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  // Use-case tag, e.g. "offer_letter" | "employment_contract" | "nda".
+  category    String   @default("offer_letter")
+  status      String   @default("draft") // draft | published
+
+  // Stored PDF (kept on disk under /storage, served via an auth'd route).
+  fileName    String
+  storageKey  String // path/key under the storage root
+  fileSize    Int      @default(0)
+  pageCount   Int      @default(1)
+
+  // Set once the template is published to Documenso as a reusable TEMPLATE
+  // envelope. Documents are then generated from it via /envelope/use.
+  documensoTemplateId String?
+  documensoSyncedAt   DateTime?
+
+  recipients TemplateRecipient[]
+  fields     TemplateField[]
+  documents  Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// A signing role on the template (Candidate, HR, Manager, Authorized Signatory).
+model TemplateRecipient {
+  id           String  @id @default(cuid())
+  templateId   String
+  template     Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  // Stable key used to wire fields -> recipient and to map prefill data.
+  roleKey      String  // candidate | hr | manager | authorized_signatory | custom_*
+  label        String  // Human label, e.g. "Authorized Signatory"
+  // Optional defaults; for per-role fixed signers (e.g. HR mailbox).
+  defaultName  String?
+  defaultEmail String?
+  signingOrder Int     @default(1)
+  color        String  @default("#3b82f6") // UI accent for this recipient's fields
+
+  // Documenso template-recipient id (captured at publish; used by /envelope/use).
+  documensoRecipientId String?
+
+  fields TemplateField[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([templateId, roleKey])
+  @@index([templateId])
+}
+
+// A single placed field on the PDF, assigned to exactly one recipient.
+model TemplateField {
+  id          String  @id @default(cuid())
+  templateId  String
+  template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   TemplateRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  // signature | initials | name | email | date | text | number | checkbox | dropdown | radio
+  type     String
+  label    String?
+  required Boolean @default(true)
+
+  // Geometry — all values are 0..100 percentages relative to the page box.
+  page      Int   @default(1)
+  xPct      Float
+  yPct      Float
+  widthPct  Float
+  heightPct Float
+
+  // Where this field's value comes from when generating a document.
+  // e.g. "candidate.fullName", "candidate.joiningDate", "candidate.salary".
+  // Null = collected at signing time (signatures) or left blank.
+  prefillKey String?
+
+  // JSON-encoded extras: dropdown/radio options, placeholder, default value, etc.
+  meta String?
+
+  // Documenso field id (captured at publish; targeted by /envelope/use prefill).
+  documensoFieldId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([templateId])
+  @@index([recipientId])
+}
+
+// ---------------------------------------------------------------------------
+// Document = a concrete instance generated from a template for one candidate,
+// sent to Documenso for signing.
+// ---------------------------------------------------------------------------
+model Document {
+  id         String   @id @default(cuid())
+  templateId String?
+  template   Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  title  String
+  // draft | sent | viewed | partially_signed | completed | rejected | error
+  status String @default("draft")
+
+  // JSON snapshot of the HRMS data used to prefill (candidate name, role, etc).
+  prefillData String @default("{}")
+
+  // External Documenso identifiers (null while in mock/draft).
+  documensoDocumentId String?
+  signingFlowUrl      String?
+
+  recipients DocumentRecipient[]
+  events     DocumentEvent[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  @@index([templateId])
+  @@index([status])
+}
+
+model DocumentRecipient {
+  id         String  @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  roleKey String
+  label   String
+  name    String
+  email   String
+  // pending | sent | viewed | signed | rejected
+  status  String  @default("pending")
+  signingOrder Int @default(1)
+
+  documensoRecipientId String?
+  signedAt             DateTime?
+
+  @@index([documentId])
+}
+
+// Append-only audit log fed by Documenso webhooks (viewed/signed/completed/...).
+model DocumentEvent {
+  id         String  @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  // sent | viewed | signed | completed | rejected | error | created
+  type        String
+  recipientEmail String?
+  message     String?
+  payload     String? // raw webhook JSON for debugging
+
+  createdAt DateTime @default(now())
+
+  @@index([documentId])
+}
